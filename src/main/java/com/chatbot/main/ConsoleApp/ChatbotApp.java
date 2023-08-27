@@ -6,12 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 public class ChatbotApp {
 
 	List<String> ques;
-
+	ConcurrentHashMap<String,String> queans = new ConcurrentHashMap<>();
 	public ChatbotApp() {
 		ques = new ArrayList<>();
 	}
@@ -19,6 +20,7 @@ public class ChatbotApp {
 	public void start() throws InterruptedException, ExecutionException {
 		Scanner sc = new Scanner(System.in);
 		getAllQuestion();
+		askQuestion();
 		String question = "Hi! This is LISA. I have a great shift opportunity for you! Are you Interested in hearing about it?\r\n"
 				+ "Please respond \"Yes\" or \"No\" ";
 		String lastQuestion = question;
@@ -28,15 +30,15 @@ public class ChatbotApp {
 
 			String response = sc.nextLine();
 
-			String answer = askQuestion(response);
+			String answer = queans.getOrDefault(response,"Not Found");
 
 			System.out.println(answer);
 
-			if (!ques.contains(answer)) {
+			if (!ques.contains(response)) {
 				break;
 			}
 
-			if (askQuestion(answer).equals("Not Found")) {
+			if (answer.equals("Not Found")) {
 				invalidHandler();
 				lastQuestion = question;
 				continue;
@@ -47,14 +49,14 @@ public class ChatbotApp {
 			lastQuestion = answer;
 
 		}
-		// sc.close();
+		 sc.close();
 	}
 
 	private void invalidHandler() {
 		System.out.println("I'm sorry, I didn't understand your response.");
 	}
 
-	private String askQuestion(String question) {
+	private void askQuestion() {
 		String jdbcUrl = "jdbc:h2:mem:testdb";
 		String username = "admin";
 		String password = "admin";
@@ -62,19 +64,19 @@ public class ChatbotApp {
 		try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
 			Statement statement = connection.createStatement();
 
-			String query = "SELECT answer FROM FAQ where question='" + question + "'";
+			String query = "SELECT question,answer FROM FAQ";
 			ResultSet resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-
-				String name = resultSet.getString("answer");
-				return name;
+				String ques = resultSet.getString("question");
+				String answer = resultSet.getString("answer");
+				//System.out.println(ques + " " + answer);
+				queans.put(ques,answer);
 			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return "Not Found";
 	}
 
 	private void getAllQuestion() {
