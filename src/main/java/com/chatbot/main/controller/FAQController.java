@@ -30,8 +30,8 @@ public class FAQController {
 
 	@PostMapping("/add")
 	public String addFAQ(@RequestParam("question") String question, @RequestParam("answer") String answer) {
-		faqService.addFAQ(question, answer);
-		return "FAQ added successfully!";
+		String response = faqService.addFAQ(question, answer);
+		return response;
 	}
 
 	@PutMapping("/{id}")
@@ -47,8 +47,8 @@ public class FAQController {
 
 	@PostMapping("/remove")
 	public String removeFAQ(@RequestParam("question") String question) {
-		faqService.removeFAQ(question);
-		return "FAQ removed successfully!";
+		boolean isdeleted = faqService.removeFAQ(question);
+		return isdeleted ? "FAQ removed successfully!" : "FAQ removal failed!";
 	}
 
 	@GetMapping("/getAll")

@@ -23,7 +23,8 @@ public class FAQService {
 		}
 	}
 
-	public void addFAQ(String question, String answer) {
+	public String addFAQ(String question, String answer) {
+		if(question == null || answer == null) return "FAQ addition failed!";
 		FAQ faq = repo.findByQuestion(question);
 		if (faq == null) {
 			faq = new FAQ();
@@ -31,6 +32,7 @@ public class FAQService {
 		}
 		faq.setAnswer(answer);
 		repo.save(faq);
+		return "FAQ Added Successfully";
 	}
 
 	public boolean updateFAQ(Long id, String newAnswer) {
@@ -45,11 +47,13 @@ public class FAQService {
 		}
 	}
 
-	public void removeFAQ(String question) {
+	public boolean removeFAQ(String question) {
 		FAQ faq = repo.findByQuestion(question);
 		if (faq != null) {
 			repo.delete(faq);
+			return true;
 		}
+		return false;
 	}
 
 	public List<String> getAllQuestions() {
