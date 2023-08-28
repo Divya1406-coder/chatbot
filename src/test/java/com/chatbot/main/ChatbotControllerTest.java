@@ -101,16 +101,16 @@ public class ChatbotControllerTest {
 	        Long id = 1L;
 	        String newAnswer = "NewValidAnswer";
 
-	        // Simulate a failure when updating FAQ
+	        
 	        when(faqService.updateFAQ(anyLong(), anyString())).thenReturn(false);
 
-	        // Build the request
+
 	        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/" + id)
 	                .contentType(MediaType.APPLICATION_JSON)
 	                .content(newAnswer);
 
 	        mockMvc.perform(request)
-	                .andExpect(status().isNotFound()); // Adjust the expected status accordingly
+	                .andExpect(status().isNotFound()); 
 	    }
 
     @Test
@@ -119,7 +119,7 @@ public class ChatbotControllerTest {
 
         mockMvc.perform(post("/remove")
                 .param("question", "InvalidQuestion"))
-                .andExpect(status().isOk()) // Adjust the expected status accordingly
+                .andExpect(status().isOk())
                 .andExpect(content().string("FAQ removal failed!"));
     }
 
